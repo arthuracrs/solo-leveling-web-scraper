@@ -1,0 +1,12 @@
+{
+  "name": "crawler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "pdfkit": "^0.11.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  }
+}

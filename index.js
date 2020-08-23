@@ -1,7 +1,7 @@
 const rp = require('request-promise')
 const cheerio = require('cheerio')
 const fs = require('fs');
-
+const pdfkit = require('pdfkit');
 
 function chapterGenerator(capNumber, plusOne) {
     const options = {
@@ -18,12 +18,21 @@ function chapterGenerator(capNumber, plusOne) {
                 chapterText += '\n'
                 chapterText += $(item).text()
             })
-            fs.writeFile(`chapters/chapter-${capNumber}.txt`, chapterText, function (err) {
+            const doc = new pdfkit;
+            doc.pipe(fs.createWriteStream(`chapters/pdf/chapter-${capNumber}.pdf`))
+            doc.text('', 10, 10)
+            doc.text(chapterText, {
+                width: 600,
+                align: 'left'
+            })
+            doc.end();
+            fs.writeFile(`chapters/txt/chapter-${capNumber}.txt`, chapterText, function (err) {
                 if (err) return console.log(err);
                 console.log(`Chapter ${capNumber} OK`);
             });
         })
         .catch((err) => {
+            console.log(err)
             console.log(`Chapter ${capNumber} ERROR. RETRYING...`);
             chapterGenerator(capNumber)
 
@@ -33,14 +42,15 @@ function chapterGenerator(capNumber, plusOne) {
 
 
 function novelGenerator(start, end) {
-    var dir = './chapters';
+    let dir3 = './chapters'
+    let dir1 = './chapters/txt/'
+    let dir2 = './chapters/pdf/'
 
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
+    if (!fs.existsSync(dir3)) fs.mkdirSync(dir3);
+    if (!fs.existsSync(dir2)) fs.mkdirSync(dir2);
+    if (!fs.existsSync(dir1)) fs.mkdirSync(dir1);
 
     for (let chapter = start; chapter < end; chapter++) {
-
         chapterGenerator(chapter, true)
     }
 
